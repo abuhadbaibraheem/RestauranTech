@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestauranTech - AI-Powered Call Assistant for Restaurants</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1F2937',
+                        secondary: '#F59E0B',
+                        accent: '#10B981',
+                        stripe: {
+                            purple: '#635BFF',
+                            blue: '#0A2540',
+                            green: '#00D4AA',
+                            pink: '#FF0080'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'fade-in': 'fadeIn 1s ease-out',
+                        'gradient': 'gradient 8s ease infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(30px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        gradient: {
+                            '0%, 100%': { backgroundPosition: '0% 50%' },
+                            '50%': { backgroundPosition: '100% 50%' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: 400% 400%;
+            animation: gradient 8s ease infinite;
+        }
+        
+        .stripe-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: gradient 8s ease infinite;
+        }
+        
+        .floating-card {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-card:nth-child(2) {
+            animation-delay: -2s;
+        }
+        
+        .floating-card:nth-child(3) {
+            animation-delay: -4s;
+        }
+        
+        .glow {
+            box-shadow: 0 0 20px rgba(99, 91, 255, 0.3);
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: heroGradient 8s ease infinite;
+        }
+        
+        @keyframes heroGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .special-text {
+            color: #000000;
+            font-weight: 800;
+            padding: 20px 30px 35px 30px;
+            border-radius: 50px;
+            position: relative;
+            display: inline-block;
+            text-shadow: none;
+            transition: filter 0.25s ease, transform 0.25s ease;
+            filter: blur(1.5px); /* slightly blurred when not hovered */
+        }
+
+        .special-text-inner {
+            display: inline-block;
+            background-image: linear-gradient(180deg, #000000 0%, #000000 100%); /* black by default */
+            background-size: 100% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            transition: background-image 0.25s ease, background-position 0.25s ease;
+        }
+        
+        .special-text::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            border-radius: 55px;
+            z-index: -1;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .special-text::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: transparent;
+            border-radius: 50px;
+            z-index: -1;
+            box-shadow: none;
+            transition: all 0.3s ease;
+        }
+        
+        @keyframes specialGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .special-text:hover {
+            transform: translateY(-2px);
+            border-radius: 50px;
+            filter: blur(0px);
+        }
+
+        .special-text:hover .special-text-inner {
+            background-image: linear-gradient(135deg, #7C3AED 0%, #635BFF 45%, #FF0080 100%);
+            background-size: 200% 200%;
+            animation: specialGradient 4s ease infinite;
+        }
+        
+        .special-text:hover::before {
+            opacity: 0.3;
+            border-radius: 55px;
+            transition: all 0.3s ease;
+        }
+        
+        .special-text:hover::after {
+            background: #ffffff;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* انماشنات جديدة جميلة */
+        .bounce-in {
+            animation: bounceIn 1s ease-out;
+        }
+        
+        .slide-in-left {
+            animation: slideInLeft 0.8s ease-out;
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-out;
+        }
+        
+        .zoom-in {
+            animation: zoomIn 0.6s ease-out;
+        }
+        
+        .rotate-in {
+            animation: rotateIn 1s ease-out;
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .scale-in {
+            animation: scaleIn 0.5s ease-out;
+        }
+        
+        .wiggle {
+            animation: wiggle 0.5s ease-in-out;
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        .morphing-shape {
+            animation: morphingShape 8s ease-in-out infinite;
+        }
+        
+        .floating-bubbles {
+            position: relative;
+        }
+        
+        .floating-bubbles::before,
+        .floating-bubbles::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(99, 91, 255, 0.3);
+            animation: floatingBubbles 4s ease-in-out infinite;
+        }
+        
+        .floating-bubbles::before {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .floating-bubbles::after {
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        /* Keyframes للانماشنات الجديدة */
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes slideInLeft {
+            0% { transform: translateX(-100px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+            0% { transform: translateX(100px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes zoomIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes rotateIn {
+            0% { transform: rotate(-200deg); opacity: 0; }
+            100% { transform: rotate(0deg); opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            0% { transform: translateY(30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes scaleIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99, 91, 255, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(99, 91, 255, 0.6); }
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        @keyframes morphingShape {
+            0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+        }
+        
+        @keyframes floatingBubbles {
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.7; }
+            50% { transform: translateY(-20px) scale(1.2); opacity: 1; }
+        }
+
+        /* انماشنات للعناصر التفاعلية */
+        .button-hover {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .button-hover::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .button-hover:hover::before {
+            left: 100%;
+        }
+        
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        /* انماشنات للخلفية */
+        .animated-bg {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(99, 91, 255, 0.1), transparent);
+            animation: rotate 20s linear infinite;
+        }
+        
+        .gradient-mesh {
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            animation: gradientShift 8s ease-in-out infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { 
+                background: 
+                    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            }
+            50% { 
+                background: 
+                    radial-gradient(circle at 80% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 20% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 60% 60%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+            }
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 overflow-x-hidden">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md shadow-lg fixed w-full z-50 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <img src="Resources/logo.svg" alt="RestauranTech Logo" class="w-12 h-12 mr-4">
+                    <img src="Resources/text_logo.svg" alt="RestauranTech" class="h-14">
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#features" class="text-gray-700 hover:text-stripe-purple transition-colors font-medium">Features</a>
+                    <a href="#how-it-works" class="text-gray-700 hover:text-stripe-purple transition-colors font-medium">How It Works</a>
+                    <a href="#partners" class="text-gray-700 hover:text-stripe-purple transition-colors font-medium">Partners</a>
+                    <a href="#testimonials" class="text-gray-700 hover:text-stripe-purple transition-colors font-medium">Testimonials</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#contact" class="bg-stripe-purple text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-all duration-300 font-semibold hover:shadow-lg button-hover pulse-glow">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 relative overflow-hidden animated-bg">
+        <!-- Animated Background -->
+        <div class="absolute inset-0 bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100"></div>
+        <div class="absolute inset-0 bg-gradient-to-tr from-blue-200/30 via-purple-200/30 to-pink-200/30"></div>
+        <div class="absolute inset-0 bg-gradient-to-bl from-cyan-100/40 via-blue-100/40 to-indigo-100/40"></div>
+        <div class="absolute inset-0 gradient-mesh"></div>
+        <div class="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div class="absolute top-40 right-20 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: -2s;"></div>
+        <div class="absolute bottom-20 left-1/4 w-64 h-64 bg-gradient-to-r from-indigo-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: -4s;"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-pink-300/15 to-purple-300/15 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: -1s;"></div>
+        <div class="absolute bottom-10 right-1/3 w-56 h-56 bg-gradient-to-r from-cyan-300/15 to-blue-300/15 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: -3s;"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="animate-slide-up">
+                    <h1 class="text-5xl md:text-7xl font-bold mb-6 text-gray-900 leading-tight">
+                        AI Phone Orders for Restaurants
+                    </h1>
+                    <p class="text-gray-500/70 shimmer mb-6 rounded-2xl px-4 py-2 bg-white/10 backdrop-blur-sm" style="font-size: 2.2em; font-weight: 400;">
+                        With PCI-Compliant Payments Built In
+                    </p>
+                    <p class="text-xl mb-8 text-gray-600 leading-relaxed">
+                        Take phone orders 24/7 and collect payments securely via PCI DSS–compliant flows. We integrate directly with your POS or online ordering system so your clients never miss a sale.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                        <a href="#contact" class="bg-gradient-to-r from-stripe-purple to-purple-600 text-white px-8 py-4 rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all duration-300 font-semibold text-lg text-center hover:shadow-xl hover-lift button-hover bounce-in">
+                           Partner With Us
+                        </a>
+                        <a href="#demo" class="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-lg hover:border-stripe-purple hover:text-stripe-purple hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 transition-all duration-300 font-semibold text-lg text-center hover-lift button-hover slide-in-right" style="animation-delay: 0.2s;">
+                           See How Payments Work
+                        </a>
+                    </div>
+                    <div class="flex items-center space-x-6 text-sm">
+                        <div class="flex items-center bg-gradient-to-r from-white/60 to-white/40 backdrop-blur-sm px-4 py-2 rounded-full card-hover">
+                            <i class="fas fa-check-circle text-stripe-green mr-2 wiggle"></i>
+                            <span class="font-medium">PCI-DSS Compliant</span>
+                        </div>
+                        <div class="flex items-center bg-gradient-to-r from-white/60 to-white/40 backdrop-blur-sm px-4 py-2 rounded-full card-hover">
+                            <i class="fas fa-check-circle text-stripe-green mr-2 wiggle"></i>
+                            <span class="font-medium">99.9% Uptime</span>
+                        </div>
+                        <div class="flex items-center bg-gradient-to-r from-white/60 to-white/40 backdrop-blur-sm px-4 py-2 rounded-full card-hover">
+                            <i class="fas fa-check-circle text-stripe-green mr-2 wiggle"></i>
+                            <span class="font-medium">24/7 Support</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative animate-fade-in floating-bubbles">
+                    <div class="bg-gradient-to-br from-white/90 via-white/80 to-white/70 backdrop-blur-sm rounded-2xl p-8 border border-white/30 shadow-2xl floating-card morphing-shape">
+                        <div class="flex items-center mb-6">
+                            <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                            <div class="ml-4 text-sm text-gray-500">RestauranTech AI Assistant</div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-gray-100 rounded-lg p-4 max-w-xs">
+                                <p class="text-sm text-gray-700">"Hi, I'd like to order a large pepperoni pizza for delivery"</p>
+                            </div>
+                            <div class="bg-stripe-purple/10 rounded-lg p-4 ml-8 max-w-xs">
+                                <p class="text-sm text-gray-700">"Great! I'll help you with that. What size would you like?"</p>
+                            </div>
+                            <div class="bg-gray-100 rounded-lg p-4 max-w-xs">
+                                <p class="text-sm text-gray-700">"Large, please. And can I get extra cheese?"</p>
+                            </div>
+                            <div class="bg-stripe-purple/10 rounded-lg p-4 ml-8 max-w-xs">
+                                <p class="text-sm text-gray-700">"Perfect! Large pepperoni pizza with extra cheese. Your total is $24.99. How would you like to pay?"</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-slide-up">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    We Power Your Restaurant Clients
+                    <span class="special-text pulse-glow"><span class="special-text-inner">Phone Ordering</span></span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                    We partner with POS providers, online ordering platforms, telecoms, and restaurant tech companies to add secure, AI-driven phone ordering with compliant payment capture no hardware, no heavy lift.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 hover-lift border border-gray-100 animate-slide-up card-hover" style="animation-delay: 0.1s;">
+                    <div class="w-16 h-16 bg-gradient-to-r from-stripe-purple to-stripe-pink rounded-xl flex items-center justify-center mb-6 zoom-in">
+                        <i class="fas fa-chart-line text-white text-2xl wiggle"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Expand Your Offering</h3>
+                    <p class="text-gray-600 leading-relaxed">Add AI phone ordering and compliant payment capture without building it yourself.</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-8 hover-lift border border-gray-100 animate-slide-up card-hover" style="animation-delay: 0.2s;">
+                    <div class="w-16 h-16 bg-gradient-to-r from-stripe-green to-stripe-blue rounded-xl flex items-center justify-center mb-6 rotate-in">
+                        <i class="fas fa-shield-alt text-white text-2xl wiggle"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Capture More Orders</h3>
+                    <p class="text-gray-600 leading-relaxed">Recover sales from busy lines and off-hours.</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 hover-lift border border-gray-100 animate-slide-up card-hover" style="animation-delay: 0.3s;">
+                    <div class="w-16 h-16 bg-gradient-to-r from-stripe-purple to-stripe-pink rounded-xl flex items-center justify-center mb-6 scale-in">
+                        <i class="fas fa-clock text-white text-2xl wiggle"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Increase Ticket Size</h3>
+                    <p class="text-gray-600 leading-relaxed">Smart upsells and card-on-file reorders.</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl p-8 hover-lift border border-gray-100 animate-slide-up" style="animation-delay: 0.4s;">
+                    <div class="w-16 h-16 bg-gradient-to-r from-stripe-green to-stripe-blue rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-robot text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Integration-Ready</h3>
+                    <p class="text-gray-600 leading-relaxed">APIs, webhooks, menu sync, and gateway integrations.</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 hover-lift border border-gray-100 animate-slide-up" style="animation-delay: 0.5s;">
+                    <div class="w-16 h-16 bg-gradient-to-r from-stripe-purple to-stripe-pink rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-mobile-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Flexible Models</h3>
+                    <p class="text-gray-600 leading-relaxed">White-label, revenue share, or referral.</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-8 hover-lift border border-gray-100 animate-slide-up" style="animation-delay: 0.6s;">
+                    <div class="w-16 h-16 bg-gradient-to-r from-stripe-green to-stripe-blue rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-dollar-sign text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Cost Effective</h3>
+                    <p class="text-gray-600 leading-relaxed">No more hiring extra staff for busy periods. Pay only for what you use with our flexible pricing model.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-20 bg-gradient-to-br from-gray-50 to-blue-50 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-slide-up">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    From Call to Kitchen in 
+                    <span class="text-gradient">Seconds</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                    Our AI-powered system handles the entire order flow seamlessly and securely
+                </p>
+            </div>
+            
+            <div class="relative">
+                <!-- Connection Lines between all steps -->
+                <div class="hidden md:block absolute top-12 left-[14%] w-[16%] h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-80">
+                    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-purple-400 rounded-full"></div>
+                </div>
+                <div class="hidden md:block absolute top-12 left-[34%] w-[16%] h-0.5 bg-gradient-to-r from-purple-400 to-green-400 rounded-full opacity-80">
+                    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-green-400 rounded-full"></div>
+                </div>
+                <div class="hidden md:block absolute top-12 left-[54%] w-[16%] h-0.5 bg-gradient-to-r from-green-400 to-indigo-400 rounded-full opacity-80">
+                    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-indigo-400 rounded-full"></div>
+                </div>
+                <div class="hidden md:block absolute top-12 left-[74%] w-[16%] h-0.5 bg-gradient-to-r from-indigo-400 to-orange-400 rounded-full opacity-80">
+                    <div class="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 bg-orange-400 rounded-full"></div>
+                </div>
+                
+                <div class="grid md:grid-cols-5 gap-10">
+                    <div class="text-center animate-slide-up group" style="animation-delay: 0.1s;">
+                        <div class="relative">
+                            <div class="w-28 h-28 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl bounce-in pulse-glow transform transition-all duration-500 group-hover:scale-110 group-hover:shadow-3xl group-hover:-translate-y-2">
+                                <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                                    <i class="fas fa-phone text-white text-3xl"></i>
+                                </div>
+                            </div>
+                            <div class="absolute -top-3 -right-3 w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                                <span class="text-white text-sm font-bold">1</span>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-all duration-300">Caller</h3>
+                        <p class="text-gray-600 leading-relaxed text-base">Customer calls restaurant</p>
+                    </div>
+                    
+                    <div class="text-center animate-slide-up group" style="animation-delay: 0.2s;">
+                        <div class="relative">
+                            <div class="w-28 h-28 bg-gradient-to-br from-stripe-purple via-purple-600 to-stripe-pink rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl rotate-in pulse-glow transform transition-all duration-500 group-hover:scale-110 group-hover:shadow-3xl group-hover:-translate-y-2">
+                                <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                                    <i class="fas fa-robot text-white text-3xl"></i>
+                                </div>
+                            </div>
+                            <div class="absolute -top-3 -right-3 w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                                <span class="text-white text-sm font-bold">2</span>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-purple-600 transition-all duration-300">AI Agent</h3>
+                        <p class="text-gray-600 leading-relaxed text-base">AI takes order & payment</p>
+                    </div>
+                    
+                    <div class="text-center animate-slide-up group" style="animation-delay: 0.3s;">
+                        <div class="relative">
+                            <div class="w-28 h-28 bg-gradient-to-br from-stripe-green via-green-600 to-stripe-blue rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl scale-in pulse-glow transform transition-all duration-500 group-hover:scale-110 group-hover:shadow-3xl group-hover:-translate-y-2">
+                                <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                                    <i class="fas fa-shield-alt text-white text-3xl"></i>
+                                </div>
+                            </div>
+                            <div class="absolute -top-3 -right-3 w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg">
+                                <span class="text-white text-sm font-bold">3</span>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-green-600 transition-all duration-300">Secure Payment</h3>
+                        <p class="text-gray-600 leading-relaxed text-base">DTMF Masked / Hosted Link</p>
+                    </div>
+                    
+                    <div class="text-center animate-slide-up group" style="animation-delay: 0.4s;">
+                        <div class="relative">
+                            <div class="w-28 h-28 bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl bounce-in pulse-glow transform transition-all duration-500 group-hover:scale-110 group-hover:shadow-3xl group-hover:-translate-y-2">
+                                <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                                    <i class="fas fa-desktop text-white text-3xl"></i>
+                                </div>
+                            </div>
+                            <div class="absolute -top-3 -right-3 w-10 h-10 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                                <span class="text-white text-sm font-bold">4</span>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-indigo-600 transition-all duration-300">POS/Ordering</div>
+                        <p class="text-gray-600 leading-relaxed text-base">Order sent to system</p>
+                    </div>
+                    
+                    <div class="text-center animate-slide-up group" style="animation-delay: 0.5s;">
+                        <div class="relative">
+                            <div class="w-28 h-28 bg-gradient-to-br from-orange-500 via-orange-600 to-red-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl scale-in pulse-glow transform transition-all duration-500 group-hover:scale-110 group-hover:shadow-3xl group-hover:-translate-y-2">
+                                <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                                    <i class="fas fa-utensils text-white text-3xl"></i>
+                                </div>
+                            </div>
+                            <div class="absolute -top-3 -right-3 w-10 h-10 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
+                                <span class="text-white text-sm font-bold">5</span>
+                            </div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-orange-600 transition-all duration-300">Kitchen</h3>
+                        <p class="text-gray-600 leading-relaxed text-base">Order ready to prepare</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl border border-green-200 animate-slide-up" style="animation-delay: 0.6s;">
+                <div class="text-center">
+                    <p class="text-gray-800 font-semibold mb-2">
+                        🔒 <span class="text-stripe-green">Security First</span>
+                    </p>
+                    <p class="text-gray-700 text-sm leading-relaxed max-w-4xl mx-auto">
+                        We never store raw PAN or CVV. Payments are processed via PCI DSS–compliant gateways using tokenization. Scope minimized using SAQ-A or SAQ-A-EP models depending on partner integration.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8 animate-slide-up" style="animation-delay: 0.7s;">
+                <a href="#contact" class="bg-stripe-purple text-white px-8 py-4 rounded-lg hover:bg-purple-700 transition-all duration-300 font-semibold text-lg hover:shadow-xl hover-lift button-hover bounce-in">
+                    Partner With Us
+                </a>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="py-20 bg-gradient-to-br from-gray-50 to-blue-50 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 animate-slide-up">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    What restaurant owners 
+                    <span class="text-gradient">say</span>
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                    Join hundreds of satisfied restaurant owners who've transformed their business
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-2xl p-8 shadow-xl hover-lift border border-gray-100 animate-slide-up card-hover" style="animation-delay: 0.1s;">
+                    <div class="flex items-center mb-6">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star wiggle" style="animation-delay: 0.1s;"></i>
+                            <i class="fas fa-star wiggle" style="animation-delay: 0.2s;"></i>
+                            <i class="fas fa-star wiggle" style="animation-delay: 0.3s;"></i>
+                            <i class="fas fa-star wiggle" style="animation-delay: 0.4s;"></i>
+                            <i class="fas fa-star wiggle" style="animation-delay: 0.5s;"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        "RestauranTech has been a game-changer for our pizza shop. We've increased our phone orders by 35% and eliminated order errors completely. The ROI was immediate."
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-stripe-purple to-stripe-pink rounded-full flex items-center justify-center mr-4">
+                            <span class="text-white font-semibold">MS</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Mike Santoro</h4>
+                            <p class="text-sm text-gray-600">Owner, Santoro's Pizza</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-8 shadow-xl hover-lift border border-gray-100 animate-slide-up" style="animation-delay: 0.2s;">
+                    <div class="flex items-center mb-6">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        "The AI is incredibly natural. Customers don't even realize they're talking to a machine. Our staff can focus on food quality while the AI handles orders."
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-stripe-green to-stripe-blue rounded-full flex items-center justify-center mr-4">
+                            <span class="text-white font-semibold">SL</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Sarah Lee</h4>
+                            <p class="text-sm text-gray-600">Manager, Golden Dragon</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-8 shadow-xl hover-lift border border-gray-100 animate-slide-up" style="animation-delay: 0.3s;">
+                    <div class="flex items-center mb-6">
+                        <div class="flex text-yellow-400">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        "Setup took less than an hour. The integration with our POS was seamless. We're now taking orders 24/7 and our revenue has increased by 42%."
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-stripe-purple to-stripe-pink rounded-full flex items-center justify-center mr-4">
+                            <span class="text-white font-semibold">RJ</span>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Robert Johnson</h4>
+                            <p class="text-sm text-gray-600">Owner, Burger Barn</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-r from-stripe-purple to-stripe-pink text-white relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-stripe-purple/90 to-stripe-pink/90"></div>
+        <div class="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div class="absolute bottom-10 right-10 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: -2s;"></div>
+        
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative z-10">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 animate-slide-up">
+                Ready to transform your restaurant?
+            </h2>
+            <p class="text-xl mb-8 text-white/90 leading-relaxed animate-slide-up" style="animation-delay: 0.1s;">
+                Join thousands of restaurants that have already increased their revenue and eliminated order errors with RestauranTech.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up" style="animation-delay: 0.2s;">
+                <a href="#contact" class="bg-white text-stripe-purple px-8 py-4 rounded-lg hover:bg-gray-100 transition-all duration-300 font-semibold text-lg hover:shadow-xl hover-lift button-hover bounce-in">
+                    Start Free 14-Day Trial
+                </a>
+                <a href="#demo" class="border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white hover:text-stripe-purple transition-all duration-300 font-semibold text-lg hover-lift button-hover slide-in-right" style="animation-delay: 0.3s;">
+                    Schedule Demo
+                </a>
+            </div>
+            <p class="text-sm text-white/70 mt-4 animate-slide-up" style="animation-delay: 0.3s;">No credit card required • Cancel anytime</p>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-white relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 animate-slide-up">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    Get started 
+                    <span class="text-gradient">today</span>
+                </h2>
+                <p class="text-xl text-gray-600 leading-relaxed">
+                    Speak with our restaurant specialists and see how RestauranTech can transform your business
+                </p>
+            </div>
+            
+                        <div class="flex justify-center">
+                <div class="w-full max-w-md animate-slide-up" style="animation-delay: 0.2s;">
+                    <form class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Restaurant Name</label>
+                            <input type="text" name="restaurant-name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-stripe-purple focus:border-transparent transition-all duration-300" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Owner Name</label>
+                            <input type="text" name="owner-name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-stripe-purple focus:border-transparent transition-all duration-300" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-stripe-purple focus:border-transparent transition-all duration-300" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                            <input type="tel" name="phone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-stripe-purple focus:border-transparent transition-all duration-300" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Monthly Order Volume</label>
+                            <select name="volume" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-stripe-purple focus:border-transparent transition-all duration-300" required>
+                                <option value="">Select volume...</option>
+                                <option value="Under 500 orders">Under 500 orders</option>
+                                <option value="500-1000 orders">500-1000 orders</option>
+                                <option value="1000-2000 orders">1000-2000 orders</option>
+                                <option value="2000+ orders">2000+ orders</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-stripe-purple text-white py-4 rounded-lg hover:bg-purple-700 transition-all duration-300 font-semibold text-lg hover:shadow-xl hover-lift button-hover pulse-glow">
+                            Get Your Free Trial
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <img src="Resources/logo.svg" alt="RestauranTech Logo" class="w-12 h-12 mr-4">
+                        <img src="Resources/text_logo.svg" alt="RestauranTech" class="h-10">
+                    </div>
+                    <p class="text-gray-300 mb-4 leading-relaxed">
+                        The AI-powered call assistant that transforms restaurant phone ordering.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white transition-colors"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-4">Product</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Integrations</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">API</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Status</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Security</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold mb-4">Company</h3>
+                    <ul class="space-y-2 text-gray-300">
+                        <li><a href="#" class="hover:text-white transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="privacy-policy.html" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="terms-of-service.html" class="hover:text-white transition-colors">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
+                <p>&copy; 2024 RestauranTech. All rights reserved. PCI-DSS compliant and secure.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Form submission handling
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = new FormData(this);
+            const restaurantName = formData.get('restaurant-name') || this.querySelector('input[type="text"]').value;
+            const ownerName = formData.get('owner-name') || this.querySelectorAll('input[type="text"]')[1].value;
+            const email = formData.get('email') || this.querySelector('input[type="email"]').value;
+            const phone = formData.get('phone') || this.querySelector('input[type="tel"]').value;
+            const volume = formData.get('volume') || this.querySelector('select').value;
+            
+            // Create professional email content
+            const emailSubject = `New Partnership Inquiry from ${restaurantName}`;
+            const emailBody = `Dear Jessica,
+
+I hope this email finds you well. We have received a new partnership inquiry through our website with the following details:
+
+Restaurant Information:
+• Restaurant Name: ${restaurantName}
+• Owner Name: ${ownerName}
+• Email: ${email}
+• Phone: ${phone}
+• Monthly Order Volume: ${volume}
+
+This potential partner has expressed interest in RestauranTech's AI-powered phone ordering solution with PCI-compliant payment integration.
+
+Please follow up with them within 24 hours to discuss partnership opportunities and schedule a demo.
+
+Best regards,
+RestauranTech Contact System
+
+---
+This is an automated message from restaurantech.ai
+Date: ${new Date().toLocaleString()}`;
+
+            // Create mailto link with proper encoding - FOR TESTING SEND TO PERSONAL EMAIL
+            const mailtoLink = `mailto:jessica@restaurantech.ai?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+            
+            // Debug: Show the email details for testing
+            console.log('Email Subject:', emailSubject);
+            console.log('Email Body:', emailBody);
+            console.log('Mailto Link:', mailtoLink);
+            
+            // Copy email details to clipboard for easy testing
+            const debugInfo = `Testing RestauranTech Contact Form\n\nEmail will be sent to: jessica@restaurantech.ai\n\nSubject: ${emailSubject}\n\nBody:\n${emailBody}`;
+            
+            // Try to copy to clipboard
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(debugInfo).then(() => {
+                    console.log('Debug info copied to clipboard');
+                });
+            }
+            
+            // Try opening email client first
+            try {
+                window.location.href = mailtoLink;
+            } catch (error) {
+                console.error('Error opening email client:', error);
+            }
+            
+            // Also create Gmail compose URL as backup
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&to=jessica@restaurantech.ai&su=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+            
+            // Show options to user
+            const userChoice = confirm(`تم تحضير الإيميل بنجاح!\n\nسيتم إرسال إلى: jessica@restaurantech.ai\nالموضوع: ${emailSubject}\n\nاضغط OK لفتح Gmail في المتصفح\nاضغط Cancel للاستمرار بالطريقة العادية`);
+            
+            if (userChoice) {
+                // Open Gmail compose in new tab
+                window.open(gmailUrl, '_blank');
+                alert('تم فتح Gmail في تبويب جديد مع الإيميل معبأ. فقط اضغط Send!');
+            } else {
+                alert('تحقق من برنامج الإيميل الذي فتح، أو انسخ المحتوى من Console وأرسله يدوياً.');
+            }
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    
+                    // Add staggered animations for child elements
+                    const animatedChildren = entry.target.querySelectorAll('.bounce-in, .slide-in-left, .slide-in-right, .zoom-in, .rotate-in, .fade-in-up, .scale-in');
+                    animatedChildren.forEach((child, index) => {
+                        setTimeout(() => {
+                            child.style.animationPlayState = 'running';
+                        }, index * 100);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        document.querySelectorAll('.animate-slide-up, .animate-fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            observer.observe(el);
+        });
+
+        // Add hover effects for interactive elements
+        document.querySelectorAll('.card-hover').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+                this.style.boxShadow = '0 25px 50px rgba(0, 0, 0, 0.15)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+                this.style.boxShadow = '';
+            });
+        });
+
+        // Add click effects for buttons
+        document.querySelectorAll('.button-hover').forEach(button => {
+            button.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Add floating animation to background elements
+        const floatingElements = document.querySelectorAll('.floating-bubbles');
+        floatingElements.forEach((el, index) => {
+            el.style.animationDelay = `${index * 0.5}s`;
+        });
+    </script>
+</body>
+</html>
